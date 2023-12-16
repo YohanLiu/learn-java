@@ -36,6 +36,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
     implementation 'org.apache.commons:commons-collections4:4.1'
 
+    // https://mvnrepository.com/artifact/com.ctrip.framework.apollo/apollo-client
+    implementation 'com.ctrip.framework.apollo:apollo-client:2.1.0'
+
 }
 
 tasks.named('test') {
