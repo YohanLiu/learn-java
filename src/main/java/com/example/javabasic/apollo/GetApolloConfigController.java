@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/apollo")
 public class GetApolloConfigController {
     // 通过注解获取apollo中的配置，没有赋值默认值false
-    @Value("${sms.enable:false}")
-    private String smsEnable;
+    @Value("${yohan.key:default by @Value}")
+    private String yohanKey;
 
-    @GetMapping("/sms-enable")
+    @GetMapping("/yohankey")
     public String getSmsConfig() {
-        return smsEnable;
+        return yohanKey;
     }
 }
