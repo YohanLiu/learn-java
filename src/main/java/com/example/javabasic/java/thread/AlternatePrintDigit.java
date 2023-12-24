@@ -1,4 +1,4 @@
-package com.example.javabasic.thread;
+package com.example.javabasic.java.thread;
 
 public class AlternatePrintDigit {
     public static final Object obj = new Object();
@@ -59,9 +59,6 @@ public class AlternatePrintDigit {
             }
         }
     }
-
-
-
 }
 
 

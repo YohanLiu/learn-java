@@ -1,6 +1,6 @@
-package com.example.javabasic.thread;
+package com.example.javabasic.java.thread;
 
-import static com.example.javabasic.thread.PrintNumberTest.loop;
+import static com.example.javabasic.java.thread.PrintNumberTest.loop;
 
 public class PrintNumberTest {
     public static int loop = 100;

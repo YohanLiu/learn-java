@@ -1,7 +1,7 @@
-package com.example.javabasic.stream;
+package com.example.javabasic.java.stream;
 
 import org.apache.commons.lang3.tuple.MutablePair;
-
+import com.example.javabasic.java.stream.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

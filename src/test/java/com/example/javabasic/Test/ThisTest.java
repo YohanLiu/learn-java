@@ -1,10 +1,7 @@
 package com.example.javabasic.Test;
 
-
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 public class ThisTest {
     public static void main(String[] args) {
         System.out.println("main method");

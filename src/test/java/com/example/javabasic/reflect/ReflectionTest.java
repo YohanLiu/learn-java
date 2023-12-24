@@ -1,13 +1,11 @@
 package com.example.javabasic.reflect;
 
+import com.example.javabasic.java.file.Person;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-@SpringBootTest
 public class ReflectionTest {
     @Test
     public void test01() {

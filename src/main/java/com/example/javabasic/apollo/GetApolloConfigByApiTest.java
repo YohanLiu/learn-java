@@ -3,6 +3,10 @@ package com.example.javabasic.apollo;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
 
+/**
+ * @author yohan
+ * @Date 2023/12/16
+ */
 public class GetApolloConfigByApiTest {
     public static void main(String[] args) {
         // 设置系统参数
@@ -11,7 +15,7 @@ public class GetApolloConfigByApiTest {
         System.setProperty("apollo.configService", "http://localhost:8080");
 
         Config appConfig = ConfigService.getAppConfig();
-        String property = appConfig.getProperty("sms.enable", null);
+        String property = appConfig.getProperty("yohan.key", null);
         System.out.println(property);
     }
 }

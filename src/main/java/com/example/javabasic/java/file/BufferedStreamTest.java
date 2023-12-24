@@ -1,4 +1,4 @@
-package com.example.javabasic.file;
+package com.example.javabasic.java.file;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

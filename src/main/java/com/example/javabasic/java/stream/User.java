@@ -1,4 +1,4 @@
-package com.example.javabasic.stream;
+package com.example.javabasic.java.stream;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
