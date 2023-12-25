@@ -11,3 +11,15 @@ app:
 env: dev
 yohan:
   key: config in local properties second
+# xxl-job 配置
+xxl:
+  job:
+    accessToken: default_token
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+      ip: 127.0.0.1
+      port: 9999
+      appname: xxl-job-executor-sample
+      logretentiondays: 30
+
