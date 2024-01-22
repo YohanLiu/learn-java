@@ -1,12 +1,10 @@
 package com.example.javabasic.java.reflect;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
-@ToString
+@Component
+@Data
 public class Person {
     private String name;
 
@@ -20,7 +18,7 @@ public class Person {
     private Person(String name, int age) {
         this.name = name;
         this.age = age;
-        System.out.println("Person(" + name + ", " +age + ")有参构造器");
+        System.out.println("Person(" + name + ", " + age + ")有参构造器");
     }
 
     // 方法

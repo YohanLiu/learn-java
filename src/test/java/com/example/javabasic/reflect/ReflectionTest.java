@@ -1,7 +1,8 @@
 package com.example.javabasic.reflect;
 
-import com.example.javabasic.java.file.Person;
+import com.example.javabasic.java.reflect.Person;
 import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
