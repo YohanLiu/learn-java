@@ -1,12 +1,6 @@
 package com.example.javabasic.java.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 public class ObjectInputOutputStreamTest {
     public static void main(String[] args) {
@@ -15,12 +9,12 @@ public class ObjectInputOutputStreamTest {
                 "\\file\\person.dat")));
              ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(new File("src\\main\\java\\com\\example\\javabasic" +
                      "\\file\\person.dat")))) {
-            Person person = new Person("yohan", 23);
-            objectOutputStream.writeObject(person);
+            PersonForFile personForFile = new PersonForFile("yohan", 23);
+            objectOutputStream.writeObject(personForFile);
 
             objectOutputStream.flush();
-            Person personFromDat = (Person)objectInputStream.readObject();
-            System.out.println(personFromDat);
+            PersonForFile personForFileFromDat = (PersonForFile) objectInputStream.readObject();
+            System.out.println(personForFileFromDat);
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

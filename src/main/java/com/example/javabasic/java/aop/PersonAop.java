@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class PersonAop {
-    @Pointcut("execution(* com.example.javabasic.java.reflect.Person.getName())")
+    @Pointcut("execution(* com.example.javabasic.java.aop.PersonForAop.getName())")
     public void pointCut() {
     }
 
@@ -24,9 +24,9 @@ public class PersonAop {
     public Object serviceAround(ProceedingJoinPoint joinPoint) throws Throwable {
         String proceed = (String) joinPoint.proceed();
         if (StringUtils.equals(proceed, "张三")) {
-            return proceed;
+            return "张三" + "---AOP equals 张三";
         } else {
-            return "李四";
+            return proceed + "---AOP not equals 张三";
         }
     }
 }

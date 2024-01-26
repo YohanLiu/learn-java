@@ -1,6 +1,6 @@
 package com.example.javabasic.reflect;
 
-import com.example.javabasic.java.reflect.Person;
+import com.example.javabasic.java.reflect.PersonForReflect;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
@@ -11,27 +11,27 @@ public class ReflectionTest {
     @Test
     public void test01() {
         // 正常调用对象的构造器等方法
-        Person person = new Person();
-        person.setName("yohan");
-        person.setAge(23);
-        System.out.println(person);
-        person.show();
+        PersonForReflect personForReflect = new PersonForReflect();
+        personForReflect.setName("yohan");
+        personForReflect.setAge(23);
+        System.out.println(personForReflect);
+        personForReflect.show();
     }
 
     @Test
     public void test02() throws Exception {
         // 利用反射调用类的一些非私有的属性及方法
-        Class<Person> personClass = Person.class;
-        Person person = personClass.newInstance();
-        System.out.println(person);
+        Class<PersonForReflect> personClass = PersonForReflect.class;
+        PersonForReflect personForReflect = personClass.newInstance();
+        System.out.println(personForReflect);
 
         Field age = personClass.getField("age");
-        age.set(person, 18);
-        System.out.println(age.get(person));
-        System.out.println(person);
+        age.set(personForReflect, 18);
+        System.out.println(age.get(personForReflect));
+        System.out.println(personForReflect);
 
         Method show = personClass.getMethod("show");
-        show.invoke(person);
+        show.invoke(personForReflect);
 
 
     }
@@ -39,20 +39,20 @@ public class ReflectionTest {
     @Test
     public void test03() throws Exception {
         // 利用反射调用类的一些私有的属性及方法
-        Class<Person> personClass = Person.class;
-        Constructor<Person> declaredConstructor = personClass.getDeclaredConstructor(String.class, int.class);
+        Class<PersonForReflect> personClass = PersonForReflect.class;
+        Constructor<PersonForReflect> declaredConstructor = personClass.getDeclaredConstructor(String.class, int.class);
         declaredConstructor.setAccessible(true);
 
-        Person person = declaredConstructor.newInstance("yohan", 46);
-        System.out.println(person);
+        PersonForReflect personForReflect = declaredConstructor.newInstance("yohan", 46);
+        System.out.println(personForReflect);
 
         Field name = personClass.getDeclaredField("name");
         name.setAccessible(true);
-        name.set(person, "yohanNew");
-        System.out.println(person);
+        name.set(personForReflect, "yohanNew");
+        System.out.println(personForReflect);
 
         Method showNation = personClass.getDeclaredMethod("showNation", String.class);
         showNation.setAccessible(true);
-        System.out.println(showNation.invoke(person, "中国"));
+        System.out.println(showNation.invoke(personForReflect, "中国"));
     }
 }

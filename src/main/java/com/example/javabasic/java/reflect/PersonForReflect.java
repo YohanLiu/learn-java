@@ -1,21 +1,19 @@
 package com.example.javabasic.java.reflect;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
-@Component
 @Data
-public class Person {
+public class PersonForReflect {
     private String name;
 
     public int age;
 
     // 构造器
-    public Person() {
+    public PersonForReflect() {
         System.out.println("Person()无参构造器");
     }
 
-    private Person(String name, int age) {
+    private PersonForReflect(String name, int age) {
         this.name = name;
         this.age = age;
         System.out.println("Person(" + name + ", " + age + ")有参构造器");

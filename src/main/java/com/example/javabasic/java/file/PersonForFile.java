@@ -9,7 +9,7 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Person implements Serializable {
+public class PersonForFile implements Serializable {
     private static final long serialVersionUID = 8409483118975172480L;
 
     private String name;
