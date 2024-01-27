@@ -23,8 +23,9 @@ import static net.bytebuddy.matcher.ElementMatchers.none;
  * 参照链接: @see <a href="https://github.com/raphw/byte-buddy/issues/451">https://github.com/raphw/byte-buddy/issues/451</a>
  *
  * <p>代理LocalDateTime.now()这个无参方法. LocalDateTime.now(ZoneId.systemDefault()),这种有参方法,是不影响的.LocalDateTime 的其他方法也不影响.
+ * <p>如果下面的代码想把常量 10 换成从外部拿(不是常量,从其他类取),那么代码就会报错,推测原因可能是跟类加载器不同导致的.
  */
-class Foo2 {
+class LocalDateTimeNowDemo {
     @Advice.OnMethodExit
     public static void now(@Advice.Return(readOnly = false) LocalDateTime x) {
         Date date = new Date();
@@ -32,6 +33,12 @@ class Foo2 {
         ZoneId zoneId = ZoneId.systemDefault();
         LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
         System.out.println("新得到的：" + localDateTime);
+
+//        Exception in thread "main" java.lang.NoClassDefFoundError: com/example/javabasic/java/bytebuddy/Fruit
+//        at java.base/java.time.LocalDateTime.now(LocalDateTime.java)
+//        at com.example.javabasic.java.bytebuddy.LocalDateTimeNowDemo.main(LocalDateTimeNowDemo.java:62)
+        // 报错如上
+        // LocalDateTime processedLocalDateTime = localDateTime.plusDays(Fruit.getSellByDate());
 
         LocalDateTime processedLocalDateTime = localDateTime.plusDays(10);
         System.out.println("+10天，得到的：" + processedLocalDateTime);
@@ -52,13 +59,8 @@ class Foo2 {
                 .transform(new AgentBuilder.Transformer() {
                     @Override
                     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, ProtectionDomain protectionDomain) {
-                        return builder.method(ElementMatchers.named("now")).intercept(Advice.to(Foo2.class).wrap(StubMethod.INSTANCE));
+                        return builder.method(ElementMatchers.named("now")).intercept(Advice.to(LocalDateTimeNowDemo.class).wrap(StubMethod.INSTANCE));
                     }
-
-//                    @Override
-//                    public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule javaModule) {
-//                        return builder.method(ElementMatchers.named("now")).intercept(Advice.to(Foo2.class).wrap(StubMethod.INSTANCE));
-//                    }
                 }).installOn(ByteBuddyAgent.install());
 
         System.out.println("调用方法返回：" + LocalDateTime.now());

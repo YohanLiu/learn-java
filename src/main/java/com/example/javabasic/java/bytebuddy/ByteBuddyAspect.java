@@ -29,10 +29,17 @@ public class ByteBuddyAspect implements ApplicationContextInitializer<Configurab
         TypePool typePool = TypePool.Default.of(classLoader);
         ByteBuddy byteBuddy = new ByteBuddy();
 
-        //Fruit.getPrice 方法进行代理
+        // Fruit.getPrice 方法进行代理
         byteBuddy
                 .redefine(typePool.describe("com.example.javabasic.java.bytebuddy.Fruit").resolve(), classFileLocator)
                 .visit(Advice.to(FruitInterceptor.class).on(ElementMatchers.named("getPrice"))).make()
+                .load(classLoader, ClassLoadingStrategy.Default.INJECTION).getLoaded();
+
+        // ServiceImpl.serviceMethod 方法进行代理
+        byteBuddy
+                .redefine(typePool.describe("com.example.javabasic.java.bytebuddy.ServiceImpl").resolve(), classFileLocator)
+                .visit(Advice.to(ServiceImplInterceptor.class).on(ElementMatchers.named("serviceMethod")))
+                .make()
                 .load(classLoader, ClassLoadingStrategy.Default.INJECTION).getLoaded();
 
 

@@ -11,4 +11,8 @@ public class Fruit {
     private String name;
 
     private Integer price;
+
+    public static Integer getSellByDate() {
+        return 100;
+    }
 }

@@ -17,11 +17,18 @@ import static net.bytebuddy.matcher.ElementMatchers.none;
 
 /**
  * 参照链接: @see <a href="https://github.com/raphw/byte-buddy/issues/451">https://github.com/raphw/byte-buddy/issues/451</a>
+ * <p>如果下面的代码想把常量 123 换成从外部拿(不是常量,从其他类取),那么代码就会报错,推测原因可能是跟类加载器不同导致的.
  */
-class Foo {
+class CurrentTimeMillisDemo {
     @Advice.OnMethodExit
     public static void millis(@Advice.Return(readOnly = false) long x) {
         x = 123;
+
+//        Exception in thread "main" java.lang.NoClassDefFoundError: com/example/javabasic/java/bytebuddy/Fruit
+//        at java.base/java.lang.System.currentTimeMillis(System.java)
+//        at com.example.javabasic.java.bytebuddy.CurrentTimeMillisDemo.main(CurrentTimeMillisDemo.java:45)
+        // 报错如上
+        // x = Fruit.getSellByDate();
     }
 
     public static void main(String[] args) {
@@ -36,13 +43,8 @@ class Foo {
                 .transform(new AgentBuilder.Transformer() {
                     @Override
                     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, ProtectionDomain protectionDomain) {
-                        return builder.method(ElementMatchers.named("currentTimeMillis")).intercept(Advice.to(Foo.class).wrap(StubMethod.INSTANCE));
+                        return builder.method(ElementMatchers.named("currentTimeMillis")).intercept(Advice.to(CurrentTimeMillisDemo.class).wrap(StubMethod.INSTANCE));
                     }
-
-//                    @Override
-//                    public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
-//                        return builder.method(ElementMatchers.named("currentTimeMillis")).intercept(Advice.to(Foo.class).wrap(StubMethod.INSTANCE));
-//                    }
 
                 }).installOn(ByteBuddyAgent.install());
 

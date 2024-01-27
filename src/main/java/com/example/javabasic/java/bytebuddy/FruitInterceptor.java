@@ -4,6 +4,8 @@ import net.bytebuddy.asm.Advice;
 
 /**
  * Fruit.getPrice()方法退出拦截器.
+ * <p>bytebuddy里不允许使用 lambda 写法.
+ * <p>bytebuddy里也不允许匿名内部类写法.
  *
  * @author yinhou.liu
  * @Date 2024/01/26
