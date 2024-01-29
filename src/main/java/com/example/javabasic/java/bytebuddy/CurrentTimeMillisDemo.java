@@ -17,7 +17,7 @@ import static net.bytebuddy.matcher.ElementMatchers.none;
 
 /**
  * 参照链接: @see <a href="https://github.com/raphw/byte-buddy/issues/451">https://github.com/raphw/byte-buddy/issues/451</a>
- * <p>如果下面的代码想把常量 123 换成从外部拿(不是常量,从其他类取),那么代码就会报错,推测原因可能是跟类加载器不同导致的.
+ * <p>如果下面的代码想把常量 123 换成从外部拿(不是常量,从其他类取),那么代码就会报错,推测原因可能是跟类加载器不同导致的.@see <a href="https://github.com/raphw/byte-buddy/issues/1585">https://github.com/raphw/byte-buddy/issues/1585</a>
  */
 class CurrentTimeMillisDemo {
     @Advice.OnMethodExit

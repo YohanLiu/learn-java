@@ -9,20 +9,18 @@ import java.util.Objects;
  * bytebuddy 针对类中的方法进行增强.
  *
  * <p>如果拦截器中调用了本类的方法(如本例的serviceStaticMethod),那么切记方法访问权限要为 public.
- * <p>因为 bytebuddy 增强是把方法织入到被增强类中,实际在被增强类中,调用的是ServiceImplInterceptor.serviceStaticMethod.
- * <p>所以访问类型要为 public.
- * <p>当然,如果你不想复制一份同样的方法,你也可以利用反射来调用被增强类的方法.
- * <p>反射调用虽然可读性差,但是相较于复制一份代码,还是比较易于维护.
+ * <p>因为 bytebuddy 增强是把方法织入到被增强类中,实际在被增强类中,调用的是ServiceImplInterceptor.serviceStaticMethod.所以访问类型要为 public
+ * <p>当然,如果你不想复制一份同样的方法,你也可以利用反射来调用被增强类的private方法.反射调用虽然可读性差,但是相较于复制一份代码,还是比较易于维护.
+ * <p>同样可以通过 getBean 获取 bean 后，调用被增强类的 public 方法，@Resource注入 bean 方式调用切记权限修饰符为 public.
  *
  * @author yinhou.liu
  * @Date 2024/01/27
  */
 public class ServiceImplInterceptor {
 
-    // 想通过注解注入 bean 调用被增强类方法会报错
-    // 需要通过 getBean 获取到 bean 的方式去调用
+    // 想通过注解注入 bean 调用被增强类方法切记修饰符要为 public.
 //    @Resource
-//    private static ServiceImpl serviceImpl;
+//    public static ServiceImpl serviceImpl;
 
     @Advice.OnMethodExit
     public static void selectAvailable(@Advice.Argument(0) Integer trueOrFalse, @Advice.Return(readOnly = false) boolean returned) {

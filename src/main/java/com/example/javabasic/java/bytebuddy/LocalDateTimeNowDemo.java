@@ -20,10 +20,10 @@ import java.util.Date;
 import static net.bytebuddy.matcher.ElementMatchers.none;
 
 /**
- * 参照链接: @see <a href="https://github.com/raphw/byte-buddy/issues/451">https://github.com/raphw/byte-buddy/issues/451</a>
+ * 参照链接: @see <a href="https://github.com/raphw/byte-buddy/issues/1585">https://github.com/raphw/byte-buddy/issues/1585</a>
  *
  * <p>代理LocalDateTime.now()这个无参方法. LocalDateTime.now(ZoneId.systemDefault()),这种有参方法,是不影响的.LocalDateTime 的其他方法也不影响.
- * <p>如果下面的代码想把常量 10 换成从外部拿(不是常量,从其他类取),那么代码就会报错,推测原因可能是跟类加载器不同导致的.
+ * <p>如果下面的代码想把常量 10 换成从外部拿(不是常量,从其他类取),那么代码就会报错,推测原因可能是跟类加载器不同导致的.作者解释:@see <a href="https://github.com/raphw/byte-buddy/issues/1585">https://github.com/raphw/byte-buddy/issues/1585</a>
  */
 class LocalDateTimeNowDemo {
     @Advice.OnMethodExit
