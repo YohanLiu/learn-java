@@ -1,4 +1,4 @@
-package com.example.javabasic.reflect;
+package com.example.javabasic.java.reflect;
 
 import com.example.javabasic.java.reflect.PersonForReflect;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.example.javabasic.file;
+package com.example.javabasic.java.file;
 
 import org.junit.jupiter.api.Test;
 import java.io.File;
