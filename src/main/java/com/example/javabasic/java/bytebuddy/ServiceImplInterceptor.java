@@ -18,6 +18,12 @@ import java.util.Objects;
  * @Date 2024/01/27
  */
 public class ServiceImplInterceptor {
+
+    // 想通过注解注入 bean 调用被增强类方法会报错
+    // 需要通过 getBean 获取到 bean 的方式去调用
+//    @Resource
+//    private static ServiceImpl serviceImpl;
+
     @Advice.OnMethodExit
     public static void selectAvailable(@Advice.Argument(0) Integer trueOrFalse, @Advice.Return(readOnly = false) boolean returned) {
         System.out.println("bytebuddy---方法返回值:" + returned);
@@ -26,6 +32,9 @@ public class ServiceImplInterceptor {
         System.out.println("bytebuddy调用自己拦截器静态方法---返回值:" + bytebuddyStatic);
 
         ServiceImpl serviceImpl = SpringUtil.getBean(ServiceImpl.class);
+
+        // 被增强类中的方法是 public 的话,不用反射,直接正常调用也可以的
+//        bytebuddyStatic = serviceImpl.serviceStaticMethod(trueOrFalse);
 
         // 反射的方式调用被增强类中的方法
 //        try {
