@@ -10,13 +10,13 @@ public class PersonForReflect {
 
     // 构造器
     public PersonForReflect() {
-        System.out.println("Person()无参构造器");
+        System.out.println("PersonForReflect()无参构造器");
     }
 
     private PersonForReflect(String name, int age) {
         this.name = name;
         this.age = age;
-        System.out.println("Person(" + name + ", " + age + ")有参构造器");
+        System.out.println("PersonForReflect(" + name + ", " + age + ")有参构造器");
     }
 
     // 方法

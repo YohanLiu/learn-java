@@ -12,13 +12,13 @@ public class PersonForAop {
 
     // 构造器
     public PersonForAop() {
-        System.out.println("Person()无参构造器");
+        System.out.println("PersonForAop()无参构造器");
     }
 
     private PersonForAop(String name, int age) {
         this.name = name;
         this.age = age;
-        System.out.println("Person(" + name + ", " + age + ")有参构造器");
+        System.out.println("PersonForAop(" + name + ", " + age + ")有参构造器");
     }
 
     // 方法

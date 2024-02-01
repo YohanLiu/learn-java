@@ -27,7 +27,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'junit:junit:4.13.1'
+    implementation 'org.springframework.boot:spring-boot-test:3.1.4'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-collections4:4.1'
     // 高版本java需手动引入
@@ -47,6 +49,8 @@ dependencies {
     // bytebuddy
     implementation 'net.bytebuddy:byte-buddy:1.14.9'
     implementation 'net.bytebuddy:byte-buddy-agent:1.14.9'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:3.1.5'
 }
 
 test {
