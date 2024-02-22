@@ -1,0 +1,19 @@
+dependencies {
+    // apollo
+    implementation 'com.ctrip.framework.apollo:apollo-client:2.1.0'
+    // xxl-job-core
+    implementation 'com.xuxueli:xxl-job-core:2.3.1'
+
+    implementation 'redis.clients:jedis:4.2.3'
+
+    // aop
+    implementation group: 'org.aspectj', name: 'aspectjrt', version: '1.9.19'
+    implementation 'org.aspectj:aspectjweaver:1.9.19'
+
+    // bytebuddy
+    implementation 'net.bytebuddy:byte-buddy:1.14.9'
+    implementation 'net.bytebuddy:byte-buddy-agent:1.14.9'
+}
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}

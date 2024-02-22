@@ -1,58 +1,153 @@
+// 所有buildscript｛｝块都必须出现在脚本中任何插件{}块之前
+buildscript { //构建gradle脚本自身需要的资源，可以声明的资源包括依赖项、第三方插件、maven仓库等等
+
+    // 统一依赖版本管理
+    ext {
+        lombokVersion = '1.18.26' //lombok
+        springBootVersion = '3.1.4' //springBoot
+        springCloudVersion = '2022.0.2' //springCloud
+        springCloudAlibabaVersion = '2022.0.0.0-RC2'//cloudAlibaba 2022.0.0.0-RC2
+    }
+
+    // buildscript脚本构建时需要去寻找的仓库
+    repositories { //从前往后顺序执行，找不到就向后查找
+        mavenLocal() //从maven本地仓库下载jar到gradle仓库
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/grails-core' }
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter/' }
+        maven { url "https://mvn.getui.com/nexus/content/repositories/releases/" }
+        maven {
+            url 'http://mirrors.huaweicloud.com/repository/maven/'
+            allowInsecureProtocol = true
+        }
+        mavenCentral()
+    }
+
+    //构建用到的插件
+    dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:1.1.3'//maven方式插件
+    }
+
+}
+
+//插件要在最上边初始化
 plugins {
-    id 'java'
     id 'org.springframework.boot' version '3.1.4'
     id 'io.spring.dependency-management' version '1.1.3'
+    id 'idea'
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
 
-java {
+//针对所有project的配置，包含根项目，除此之外还有subprojects 和 project，感兴趣的童鞋可以自行百度查阅
+allprojects {
+    apply plugin: 'java'    //项目是java项目
+    apply plugin: 'idea'    //项目是idea项目
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management' //类似于maven的版本管理方式
+    group = 'com.yohan'
+    version = '0.0.1-SNAPSHOT'
+    //jdk版本
     sourceCompatibility = '17'
-}
+    targetCompatibility = '17'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    //必须在插入 java插件后 执行该命令
+    configurations {
+        compileJava {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    // 所有project项目的 jar获取方式
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.deprecation = true
+    }
+
+    // 全局配置时查找依赖的使用
+    repositories { //从前往后顺序执行，找不到就向后查找
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/grails-core' }
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter/' }
+        maven { url "https://mvn.getui.com/nexus/content/repositories/releases/" }
+        maven {
+            url 'http://mirrors.huaweicloud.com/repository/maven/'
+            allowInsecureProtocol = true
+        }
+        mavenCentral()
     }
 }
 
-repositories {
-    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
-    maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
-    mavenCentral()
+subprojects {// 子项目配置(可以理解为子模块的全局配置)
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management' //类似于maven的版本管理方式
+
+    // 子model统一jar引入
+    dependencies {
+        // 注释处理器
+        annotationProcessor 'org.projectlombok:lombok'
+        implementation 'org.projectlombok:lombok'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-test'
+        implementation 'org.springframework.boot:spring-boot-test:3.1.4'
+        implementation 'junit:junit:4.13.1'
+
+        implementation 'org.apache.commons:commons-lang3:3.12.0'
+        implementation 'org.apache.commons:commons-collections4:4.1'
+        // 高版本java需手动引入此包
+        // @Resource注解就在此包下
+        implementation 'javax.annotation:javax.annotation-api:1.3.2'
+
+    }
+
+    //提供类似 Maven 的依赖管理和排除的 Gradle 插件
+    //使用类似于maven的方式（io.spring.dependency-management） 统一版本管理
+    //https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/#pom-generation  学习网址
+    //DSL 允许您使用:分隔的字符串来声明依赖管理，以配置托管依赖的坐标
+    dependencyManagement {
+        dependencies {//统一版本管理
+            //DSL 允许您使用:分隔的字符串来声明依赖管理，以配置托管依赖的坐标
+            dependency "org.projectlombok:lombok:${lombokVersion}"
+            dependency "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+
+        }
+
+        imports {
+            //引入 spring-cloud统一包管理
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+            //引入 spring-cloud-alibaba统一包管理
+            mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:${springCloudAlibabaVersion}"
+            //引入 spring-boot统一包管理
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        }
+    }
+
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'junit:junit:4.13.1'
-    implementation 'org.springframework.boot:spring-boot-test:3.1.4'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.apache.commons:commons-collections4:4.1'
-    // 高版本java需手动引入
-    implementation 'javax.annotation:javax.annotation-api:1.3.2'
-    // ----------------------------------------------------------------------------------
-    // apollo
-    implementation 'com.ctrip.framework.apollo:apollo-client:2.1.0'
-    // xxl-job-core
-    implementation 'com.xuxueli:xxl-job-core:2.3.1'
-
-    implementation 'redis.clients:jedis:4.2.3'
-
-    // aop
-    implementation group: 'org.aspectj', name: 'aspectjrt', version: '1.9.19'
-    implementation 'org.aspectj:aspectjweaver:1.9.19'
-
-    // bytebuddy
-    implementation 'net.bytebuddy:byte-buddy:1.14.9'
-    implementation 'net.bytebuddy:byte-buddy-agent:1.14.9'
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:3.1.5'
+//禁止根项目一切行为(不影响模块)
+//禁用以后执行build的时候不会构建parent项目
+tasks.forEach {
+    it.enabled = false
 }
 
-test {
+/**
+ * Gradle打标准jar包
+ * 根项目需禁用springboot插件，否则会构建失败
+ * 光禁用BootJar是不行的，还要启用Jar。
+ * GroovyDSL的写法，对KotlinDSL无效
+ */
+bootJar { enabled = false }
+
+jar { enabled = true }
+/**    KotlinDSL写法
+ * tasks.bootJar {enabled = false}
+ * tasks.jar {enabled = true}
+ */
+
+tasks.named('test') {
     useJUnitPlatform()
 }
