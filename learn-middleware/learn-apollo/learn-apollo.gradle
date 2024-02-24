@@ -1,0 +1,7 @@
+dependencies {
+    // apollo
+    implementation 'com.ctrip.framework.apollo:apollo-client:2.1.0'
+}
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}

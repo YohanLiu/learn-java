@@ -1,9 +1,5 @@
 dependencies {
-    // apollo
-    implementation 'com.ctrip.framework.apollo:apollo-client:2.1.0'
-    // xxl-job-core
-    implementation 'com.xuxueli:xxl-job-core:2.3.1'
-
+    // redis-jedis
     implementation 'redis.clients:jedis:4.2.3'
 
     // aop

@@ -1,0 +1,14 @@
+server:
+  port: 8012
+# apollo 配置
+apollo:
+  bootstrap:
+    enabled: true
+    namespaces: application
+  configService: http://192.168.3.87:8080
+app:
+  id: apollo-quickstart
+env: dev
+yohan:
+  key: config in local properties second
+

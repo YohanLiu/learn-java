@@ -1,4 +1,4 @@
-package com.yohan.javabasic.apollo;
+package com.yohan.apollo;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;

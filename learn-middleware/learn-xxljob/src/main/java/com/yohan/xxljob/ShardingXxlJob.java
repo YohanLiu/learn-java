@@ -1,4 +1,4 @@
-package com.yohan.javabasic.xxljob;
+package com.yohan.xxljob;
 
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;

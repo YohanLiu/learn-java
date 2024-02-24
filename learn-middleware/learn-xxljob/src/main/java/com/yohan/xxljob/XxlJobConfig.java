@@ -1,4 +1,4 @@
-package com.yohan.javabasic.xxljob;
+package com.yohan.xxljob;
 
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import org.springframework.beans.factory.annotation.Value;

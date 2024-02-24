@@ -1,4 +1,4 @@
-package com.yohan.javabasic.apollo;
+package com.yohan.apollo;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.yohan.javabasic.xxljob;
+package com.yohan.xxljob;
 
 import org.springframework.stereotype.Service;
 

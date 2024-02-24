@@ -1,0 +1,9 @@
+server:
+  port: 8013
+
+# es连接配置
+elasticsearch:
+  host: 127.0.0.1
+  port: 9200
+
+

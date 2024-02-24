@@ -1,0 +1,7 @@
+dependencies {
+    // xxl-job-core
+    implementation 'com.xuxueli:xxl-job-core:2.3.1'
+}
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}
