@@ -110,6 +110,9 @@ public class CompletableFutureTest {
             completableFuture2.whenComplete((t, e) -> {
                 System.out.println("------t=" + t);
                 System.out.println("------e=" + e);
+            }).exceptionally(e -> {
+                System.out.println("异常了exceptionally=" + e);
+                return null;
             }).get();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
