@@ -16,8 +16,14 @@ public class GetApolloConfigController {
     @Value("${yohan.key:default by @Value}")
     private String yohanKey;
 
-    @GetMapping("/yohankey")
+    @Value("${yohan.value:default by @Value}")
+    private String yohanValue;
+
+    @GetMapping("/yohankeyandvalue")
     public String getSmsConfig() {
-        return yohanKey;
+        System.out.println("yohanKey:" + yohanKey);
+        System.out.println("yohanValue:" + yohanValue);
+        String res = "yohanKey:" + yohanKey + "\nyohanValue:" + yohanValue;
+        return res.replaceAll("\n", "<br/>");
     }
 }
