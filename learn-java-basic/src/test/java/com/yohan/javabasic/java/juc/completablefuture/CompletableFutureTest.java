@@ -1,8 +1,16 @@
-package com.yohan.javabasic.java.juc;
+package com.yohan.javabasic.java.juc.completablefuture;
 
+import com.yohan.javabasic.java.juc.CompletableFutureDemo;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yohan
@@ -102,15 +110,19 @@ public class CompletableFutureTest {
         // 异步调用
         CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(() -> {
             System.out.println(Thread.currentThread().getName() + " : CompletableFuture2");
-            //模拟异常
-            int i = 10 / 0;
-            return 1024;
+            int result = ThreadLocalRandom.current().nextInt(10);
+            System.out.println("-----result：" + result);
+            if (result > 2) {
+                int i = 10 / 0;
+            }
+            return result;
         });
         try {
             completableFuture2.whenComplete((t, e) -> {
                 System.out.println("------t=" + t);
                 System.out.println("------e=" + e);
             }).exceptionally(e -> {
+                // 没异常则不会走进这里
                 System.out.println("异常了exceptionally=" + e);
                 return null;
             }).get();
