@@ -1,6 +1,6 @@
 package com.yohan.javabasic.java.juc;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,6 +40,12 @@ public class ReentrantLockDemo {
 
         new Thread(new LSellTicket(), "CC").start();
 
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         testReentrantLock();
     }
 
@@ -54,6 +60,8 @@ public class ReentrantLockDemo {
     }
 
     private static void testReentrantLock() {
+        System.out.println("\n-------------------------");
+        System.out.println("Lock演示可重入锁");
         // Lock演示可重入锁
         Lock lock = new ReentrantLock();
         // 创建线程
