@@ -1,6 +1,13 @@
 dependencies {
     // apollo
     implementation 'com.ctrip.framework.apollo:apollo-client:2.1.0'
+
+    // @RefreshScope注解添加
+    implementation 'org.springframework.cloud:spring-cloud-starter-config:3.1.3'
+
+    // No spring.config.import property has been defined，此报错添加
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.3'
+
 }
 
 // 动态移除对kotlin构建插件的权限,避免子模块构建报错

@@ -9,9 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * apollo的部署可以通过docker来进行部署。
  * <p>apollo页面默认端口：8070.访问网址:ip+port.本地就是localhost:8070.
  * <p>登录网址：localhost:8070/signin,初始账户：apollo，密码：admin.
+ *
+ * <p>@EnableApolloConfig注解和yml整合推荐二者用其一,且推荐yml的方式.
  */
+//@EnableApolloConfig
 @SpringBootApplication
-@EnableApolloConfig
 @Slf4j
 public class LearnApolloApplication {
     public static void main(String[] args) {
