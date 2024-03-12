@@ -5,7 +5,9 @@ apollo:
   bootstrap:
     # true:will inject 'application' namespace in bootstrap phase
     enabled: true
-    namespaces: application
+    eagerLoad:
+      enabled: true
+    namespaces: local,application
   configService: http://192.168.3.87:8080
 app:
   id: apollo-quickstart
