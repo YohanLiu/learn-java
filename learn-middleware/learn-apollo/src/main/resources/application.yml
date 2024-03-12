@@ -13,3 +13,6 @@ env: dev
 yohan:
   key: config in local application yml
 
+# 监听配置更改的namespace
+listeners: "application"
+
