@@ -2,6 +2,7 @@ package com.yohan.javabasic.java.juc;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +20,7 @@ public class AwaitAndSignalTest {
     public void test01() {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
+        CountDownLatch countDownLatch = new CountDownLatch(2);
 
         new Thread(() -> {
             lock.lock();
@@ -30,6 +32,7 @@ public class AwaitAndSignalTest {
                 e.printStackTrace();
             } finally {
                 lock.unlock();
+                countDownLatch.countDown();
             }
         }, "t1").start();
 
@@ -44,21 +47,22 @@ public class AwaitAndSignalTest {
                 System.out.println(Thread.currentThread().getName() + "\t ----发出通知");
             } finally {
                 lock.unlock();
+                countDownLatch.countDown();
             }
         }, "t2").start();
 
         // 单元测试是不支持多线程的，因为当主线程结束以后，无论子线程结束与否，都会强制退出程序，主线程优先级最高
-        // 所以为了看到效果，延长主线程存活时间
+        // 所以为了看到效果，利用CountDownLatch来阻塞主线程，等待所有线程执行完毕
         try {
-            TimeUnit.SECONDS.sleep(2);
+            countDownLatch.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * 线程需要先获得并持有锁，必须在锁块（synchronized或lock）中.
-     * <p>如下代码没在锁块中，就会报错.
+     * <p>如下代码没在锁块中，就会报错IllegalMonitorStateException.
      */
     @Test
     public void test02() {
@@ -82,10 +86,8 @@ public class AwaitAndSignalTest {
         }, "t1").start();
 
         new Thread(() -> {
-
             condition.signal();
             System.out.println(Thread.currentThread().getName() + "\t ----发出通知");
-
         }, "t2").start();
 
         // 单元测试是不支持多线程的，因为当主线程结束以后，无论子线程结束与否，都会强制退出程序，主线程优先级最高

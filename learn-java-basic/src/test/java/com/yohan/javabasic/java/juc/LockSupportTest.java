@@ -2,6 +2,7 @@ package com.yohan.javabasic.java.juc;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -15,10 +16,13 @@ public class LockSupportTest {
      */
     @Test
     public void test01() {
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+
         Thread t1 = new Thread(() -> {
             System.out.println(Thread.currentThread().getName() + "\t ----come in" + System.currentTimeMillis());
             LockSupport.park();
             System.out.println(Thread.currentThread().getName() + "\t ----被唤醒" + System.currentTimeMillis());
+            countDownLatch.countDown();
         }, "t1");
         t1.start();
 
@@ -31,14 +35,15 @@ public class LockSupportTest {
         new Thread(() -> {
             LockSupport.unpark(t1);
             System.out.println(Thread.currentThread().getName() + "\t ----发出通知");
+            countDownLatch.countDown();
         }, "t2").start();
 
         // 单元测试是不支持多线程的，因为当主线程结束以后，无论子线程结束与否，都会强制退出程序，主线程优先级最高
-        // 所以为了看到效果，延长主线程存活时间
+        // 所以为了看到效果，利用CountDownLatch来阻塞主线程，等待所有线程执行完毕
         try {
-            TimeUnit.SECONDS.sleep(3);
+            countDownLatch.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -48,6 +53,8 @@ public class LockSupportTest {
      */
     @Test
     public void test02() {
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+
         Thread t1 = new Thread(() -> {
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -57,20 +64,22 @@ public class LockSupportTest {
             System.out.println(Thread.currentThread().getName() + "\t ----come in" + System.currentTimeMillis());
             LockSupport.park();
             System.out.println(Thread.currentThread().getName() + "\t ----被唤醒" + System.currentTimeMillis());
+            countDownLatch.countDown();
         }, "t1");
         t1.start();
 
         new Thread(() -> {
             LockSupport.unpark(t1);
             System.out.println(Thread.currentThread().getName() + "\t ----发出通知");
+            countDownLatch.countDown();
         }, "t2").start();
 
         // 单元测试是不支持多线程的，因为当主线程结束以后，无论子线程结束与否，都会强制退出程序，主线程优先级最高
-        // 所以为了看到效果，延长主线程存活时间
+        // 所以为了看到效果，利用CountDownLatch来阻塞主线程，等待所有线程执行完毕
         try {
-            TimeUnit.SECONDS.sleep(3);
+            countDownLatch.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
