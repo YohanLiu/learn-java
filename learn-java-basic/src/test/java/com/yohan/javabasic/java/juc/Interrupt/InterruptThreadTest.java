@@ -15,7 +15,7 @@ public class InterruptThreadTest {
     static AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
     @Test
-    public void InterruptByAtomicBoolean() {
+    public void interruptByAtomicBoolean() {
 
         new Thread(() -> {
             while (true) {
@@ -40,7 +40,7 @@ public class InterruptThreadTest {
     }
 
     @Test
-    public void InterruptByVolatile() {
+    public void interruptByVolatile() {
         new Thread(() -> {
             while (true) {
                 if (isStop) {
@@ -64,7 +64,7 @@ public class InterruptThreadTest {
     }
 
     @Test
-    public void InterruptByInterrupt() {
+    public void interruptByInterrupt() {
         Thread t1 = new Thread(() -> {
             while (true) {
                 if (Thread.currentThread().isInterrupted()) {
