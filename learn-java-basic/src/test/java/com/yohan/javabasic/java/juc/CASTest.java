@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicStampedReference;
 public class CASTest {
 
     @Test
-    public void CASTest() {
+    public void testCAS() {
         AtomicInteger atomicInteger = new AtomicInteger(5);
 
         System.out.println(atomicInteger.compareAndSet(5, 2024) + "\t" + atomicInteger.get());
@@ -24,7 +24,7 @@ public class CASTest {
     }
 
     @Test
-    public void CASHappenABATest() {
+    public void testCASHappenABA() {
         AtomicInteger atomicInteger = new AtomicInteger(100);
 
         CountDownLatch countDownLatch = new CountDownLatch(2);
@@ -60,7 +60,7 @@ public class CASTest {
     }
 
     @Test
-    public void ABATest() {
+    public void testABA() {
         AtomicStampedReference<Integer> stampedReference = new AtomicStampedReference<>(100, 1);
 
         CountDownLatch countDownLatch = new CountDownLatch(2);
