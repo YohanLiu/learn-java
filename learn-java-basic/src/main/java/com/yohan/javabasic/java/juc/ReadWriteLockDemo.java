@@ -58,7 +58,7 @@ class MyCache {
 public class ReadWriteLockDemo {
     public static void main(String[] args) throws InterruptedException {
         MyCache myCache = new MyCache();
-        //创建线程放数据
+        // 创建线程放数据
         for (int i = 1; i <= 5; i++) {
             final int num = i;
             new Thread(() -> {
@@ -68,12 +68,20 @@ public class ReadWriteLockDemo {
 
         TimeUnit.MICROSECONDS.sleep(300);
 
-        //创建线程取数据
+        // 创建线程取数据
         for (int i = 1; i <= 5; i++) {
             final int num = i;
             new Thread(() -> {
                 myCache.get(num + "");
             }, String.valueOf(i)).start();
+        }
+
+        // 读锁没有完成之前，写锁无法获得
+        for (int i = 1; i <= 5; i++) {
+            final int num = i;
+            new Thread(() -> {
+                myCache.put(num + "", num + "");
+            }, "新的写线程" + i).start();
         }
 
         //testLockDegradation();
@@ -107,5 +115,11 @@ public class ReadWriteLockDemo {
 
         // 4 释放读锁
         readLock.unlock();
+
+        // 读锁无法升级成写锁
+        readLock.lock();
+        System.out.println("---read");
+        writeLock.lock();
+        System.out.println("---write");
     }
 }
