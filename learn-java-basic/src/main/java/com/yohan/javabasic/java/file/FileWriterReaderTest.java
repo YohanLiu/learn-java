@@ -10,9 +10,9 @@ public class FileWriterReaderTest {
     public static void main(String[] args) {
         // 相对路径的方式
         // idea中的java文件比较特殊，是以src这个文件夹为主位置
-        File srcFile = new File("src\\main\\java\\com\\example\\javabasic\\file\\io输入.txt");
+        File srcFile = new File("learn-java-basic/src/main/java/com/yohan/javabasic/java/file/io输入.txt");
         // 绝对路径的方式
-        File destFile = new File("E:\\work_study\\my-project\\java-basic\\src\\main\\java\\com\\example\\javabasic\\file\\io输出.txt");
+        File destFile = new File("/Users/yohan/myProject/learn-java/learn-java-basic/src/main/java/com/yohan/javabasic/java/file/io输出.txt");
 
         try (FileReader srcFileReader = new FileReader(srcFile);
              FileWriter destFileWriter = new FileWriter(destFile)) {

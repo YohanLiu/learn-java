@@ -9,8 +9,9 @@ import java.io.IOException;
 public class FileStreamTest {
     public static void main(String[] args) {
         // 复制一份图片
-        File srcFile = new File("src\\main\\java\\com\\example\\javabasic\\file\\playgirl.jpg");
-        File destFile = new File("src\\main\\java\\com\\example\\javabasic\\file\\playgirl_file_stream.jpg");
+        File srcFile = new File("learn-java-basic/src/main/java/com/yohan/javabasic/java/file/playgirl.jpg");
+        File destFile = new File("learn-java-basic/src/main/java/com/yohan/javabasic/java/file" +
+                "/playgirl_file_stream.jpg");
 
         try (FileInputStream srcFileInputStream = new FileInputStream(srcFile);
              FileOutputStream destFileOutputStream = new FileOutputStream(destFile)) {
