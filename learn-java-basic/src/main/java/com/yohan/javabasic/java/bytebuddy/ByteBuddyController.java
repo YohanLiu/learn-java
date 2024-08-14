@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/bytebuddy")
-public class ByteBuddyTest {
+public class ByteBuddyController {
 
     @Resource
     private ServiceImpl serviceImpl;

@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/aop")
-public class PersonAopTest {
+public class PersonAopController {
     @Resource
     private PersonForAop personForAop;
 
