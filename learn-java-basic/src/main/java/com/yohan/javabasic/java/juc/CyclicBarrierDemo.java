@@ -2,6 +2,11 @@ package com.yohan.javabasic.java.juc;
 
 import java.util.concurrent.CyclicBarrier;
 
+/**
+ * CyclicBarrier 会自动进行重置.
+ * 如果我们调用 reset 方法，但还有线程在等待，就会导致等待线程被打扰，抛出 BrokenBarrierException 异常。
+ * CyclicBarrier 侧重点是线程，而不是调用事件，它的典型应用场景是用来等待并发线程结束。
+ */
 public class CyclicBarrierDemo {
     // 创建固定值
     private static final int NUMBER = 7;
@@ -16,9 +21,11 @@ public class CyclicBarrierDemo {
         for (int i = 1; i <= 7; i++) {
             new Thread(() -> {
                 try {
-                    System.out.println(Thread.currentThread().getName() + " 星龙被收集到了");
-                    // 会将number - 1
-                    cyclicBarrier.await();
+                    for (int j = 1; j <= 2; j++) {
+                        System.out.println(Thread.currentThread().getName() + " 星龙被收集到了");
+                        // 会将number - 1
+                        cyclicBarrier.await();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
