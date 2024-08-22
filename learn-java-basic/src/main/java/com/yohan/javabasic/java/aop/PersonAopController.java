@@ -1,5 +1,6 @@
 package com.yohan.javabasic.java.aop;
 
+import com.yohan.javabasic.utils.SpringUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +33,22 @@ public class PersonAopController {
         personForAop.setName(name);
         System.out.println(personForAop.getName());
         return personForAop.getName();
+    }
+
+    /**
+     * 测试对同一个方法有多个切面的执行顺序.
+     * <p>如果没用order注解指定顺序，就会默认用类的加载顺序.
+     * <p>前一个切面执行joinPoint.proceed();的，下一个aop就会执行.
+     * <p>前一个执行return '结果'的，下一个就不执行了
+     */
+    @GetMapping("/twoAop/order")
+    public String getSmsConfig() {
+        PersonAopController personAopController = SpringUtil.getBean(PersonAopController.class);
+        return personAopController.defaultReturn();
+    }
+
+    public String defaultReturn() {
+        System.out.println("defaultReturn");
+        return "defaultReturn";
     }
 }
