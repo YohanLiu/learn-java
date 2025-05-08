@@ -42,6 +42,13 @@ public class ByteBuddyAspect implements ApplicationContextInitializer<Configurab
                 .make()
                 .load(classLoader, ClassLoadingStrategy.Default.INJECTION).getLoaded();
 
+        byteBuddy
+                .redefine(typePool.describe("com.yohan.javabasic.utils.TimeUtil").resolve(),
+                        classFileLocator)
+                .visit(Advice.to(TimeUtilNewGetNowDateTimeInterceptor.class).on(ElementMatchers.named("getNowDateTime")))
+                .visit(Advice.to(TimeUtilNewGetCurrentTimeMillisInterceptor.class).on(ElementMatchers.named("getCurrentTimeMillis")))
+                .make().load(classLoader, ClassLoadingStrategy.Default.INJECTION).getLoaded();
+
 
         log.info("ByteBuddyAspect end");
     }
