@@ -4,9 +4,11 @@ buildscript { //构建gradle脚本自身需要的资源，可以声明的资源�
     // 统一依赖版本管理
     ext {
         lombokVersion = '1.18.26' //lombok
-        springBootVersion = '3.1.4' //springBoot
-        springCloudVersion = '2022.0.2' //springCloud
+        springBootVersion = '3.4.0' //springBoot
+        springCloudVersion = '2024.0.1' //springCloud
         springCloudAlibabaVersion = '2022.0.0.0-RC2'//cloudAlibaba 2022.0.0.0-RC2
+        springAIAlibabaVersion = '1.0.0.2'
+        springAIVersion = '1.0.0'
     }
 
     // buildscript脚本构建时需要去寻找的仓库
@@ -20,6 +22,13 @@ buildscript { //构建gradle脚本自身需要的资源，可以声明的资源�
         maven {
             url 'http://mirrors.huaweicloud.com/repository/maven/'
             allowInsecureProtocol = true
+        }
+        maven {
+            url 'https://repo.spring.io/milestone'
+            name 'Spring Milestones'
+            mavenContent {
+                releasesOnly()
+            }
         }
         mavenCentral()
     }
@@ -76,6 +85,13 @@ allprojects {
             url 'http://mirrors.huaweicloud.com/repository/maven/'
             allowInsecureProtocol = true
         }
+        maven {
+            url 'https://repo.spring.io/milestone'
+            name 'Spring Milestones'
+            mavenContent {
+                releasesOnly()
+            }
+        }
         mavenCentral()
     }
 }
@@ -126,6 +142,10 @@ subprojects {// 子项目配置(可以理解为子模块的全局配置)
             mavenBom "com.alibaba.cloud:spring-cloud-alibaba-dependencies:${springCloudAlibabaVersion}"
             //引入 spring-boot统一包管理
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+
+            mavenBom "com.alibaba.cloud.ai:spring-ai-alibaba-bom:${springAIAlibabaVersion}"
+
+            mavenBom "org.springframework.ai:spring-ai-bom:${springAIVersion}"
         }
     }
 

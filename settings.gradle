@@ -13,6 +13,13 @@ pluginManagement {
         }
         maven { url 'https://repo.spring.io/milestone' }
         maven { url 'https://repo.spring.io/snapshot' }
+        maven {
+            url 'https://repo.spring.io/milestone'
+            name 'Spring Milestones'
+            mavenContent {
+                releasesOnly()
+            }
+        }
         mavenCentral() //maven中央仓库
         gradlePluginPortal()
     }
@@ -27,6 +34,11 @@ include 'learn-middleware:learn-apollo'
 findProject(':learn-middleware:learn-apollo')?.name = 'learn-apollo'
 include 'learn-middleware:learn-xxljob'
 findProject(':learn-middleware:learn-xxljob')?.name = 'learn-xxljob'
+include 'learn-spring-ai'
+include 'learn-spring-ai:spring-ai-chat'
+findProject(':learn-spring-ai:spring-ai-chat')?.name = 'spring-ai-chat'
+include 'learn-spring-ai:spring-ai-chat:deepseek-chat'
+findProject(':learn-spring-ai:spring-ai-chat:deepseek-chat')?.name = 'deepseek-chat'
 
 // 新建项目或模块的 gradle DSL 文件名都叫build.gradle
 // 若想把子模块 gradle 文件改成模块名,需要加以下代码(目前gradle就是改成模块名)
