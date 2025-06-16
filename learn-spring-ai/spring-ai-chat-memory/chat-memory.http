@@ -1,0 +1,10 @@
+# Chat Memory API
+
+### 内存API
+GET http://localhost:10001/advisor/memory/in/call?query=请记住你是金子,你就叫金子&conversation_id=jinzi
+
+### 调用
+GET http://localhost:10001/advisor/memory/in/call?query=你叫什么&conversation_id=jinzi
+
+### 信息
+GET http://localhost:10001/advisor/memory/in/messages?conversation_id=jinzi
