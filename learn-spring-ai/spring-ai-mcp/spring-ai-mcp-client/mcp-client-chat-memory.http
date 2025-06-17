@@ -1,0 +1,17 @@
+# Chat Memory API
+
+### 内存API
+GET http://localhost:8888/advisor/memory/in/call?query=请记住你是金子,你就叫金子&conversation_id=jinzi
+
+### 内存API
+GET http://localhost:8888/advisor/memory/in/call?query=你是谁&conversation_id=jinzi
+
+### 调用
+GET http://localhost:8888/advisor/memory/in/call?query=飞书链接帮我获取内容：https://open.feishu
+    .cn/document/ukTMukTMukTM/uYjMxEjL2MjMx4yMxwjN/chat-v4/chat/create&conversation_id=jinzi
+
+### 调用
+GET http://localhost:8888/advisor/memory/in/call?query=帮我查询基础定价配置：2025-06-01&conversation_id=jinzi
+
+### 信息
+GET http://localhost:8888/advisor/memory/in/messages?conversation_id=jinzi

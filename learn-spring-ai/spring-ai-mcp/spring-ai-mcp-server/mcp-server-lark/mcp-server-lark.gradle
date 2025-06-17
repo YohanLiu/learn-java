@@ -1,0 +1,16 @@
+dependencies {
+    implementation('org.springframework.ai:spring-ai-starter-mcp-server-webflux')
+    implementation('org.springframework:spring-web')
+}
+
+// https://github.com/alibaba/spring-ai-alibaba/issues/651
+// 移除包为了避免用Tomcat启动mcp server
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+    }
+}
+
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}
