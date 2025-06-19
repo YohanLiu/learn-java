@@ -1,0 +1,7 @@
+dependencies {
+    implementation 'com.alibaba.cloud.ai:spring-ai-alibaba-starter-dashscope'
+}
+
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}

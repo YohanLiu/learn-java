@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-ai-rag
+
+  ai:
+    dashscope:
+      api-key: ${AI_DEEPSEEK_API_KEY}

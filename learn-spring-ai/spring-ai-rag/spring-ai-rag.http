@@ -1,0 +1,17 @@
+### 添加文档到向量数据库
+GET http://localhost:8080/rag/add
+
+### 向量数据库中删除文档
+GET http://localhost:8080/rag/delete
+
+### 将向量数据库中的数据持久化到本地文件
+GET http://localhost:8080/rag/save
+
+### 从本地文件加载向量数据库数据
+GET http://localhost:8080/rag/load
+
+### 从向量数据库中搜索文档
+GET http://localhost:8080/rag/search
+
+### 从向量数据库中搜索文档并过滤
+GET http://localhost:8080/rag/search-filter
