@@ -1,5 +1,5 @@
 dependencies {
-    implementation("org.springframework.ai:spring-ai-starter-model-deepseek")
+    implementation 'com.alibaba.cloud.ai:spring-ai-alibaba-starter-dashscope'
     implementation 'com.alibaba.cloud.ai:spring-ai-alibaba-starter-memory'
     implementation 'org.springframework.ai:spring-ai-starter-mcp-client-webflux'
 }

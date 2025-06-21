@@ -1,11 +1,11 @@
 package com.yohan.controller;
 
+import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.deepseek.DeepSeekChatOptions;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +44,9 @@ public class InMemoryController {
                         MessageChatMemoryAdvisor.builder(messageWindowChatMemory)
                                 .build()
                 )
-                .defaultOptions(DeepSeekChatOptions.builder().temperature(0.7d).build())
+                .defaultOptions(DashScopeChatOptions.builder()
+                        .withTemperature(0.0)
+                        .build())
                 .build();
     }
 
