@@ -1,0 +1,40 @@
+# Chat Memory API
+
+### 基于mysql 的对话记忆
+GET http://localhost:10001/advisor/memory/chat/call?query=请记住你是金子,你就叫金子&conversation_id=yohan
+
+### 调用
+GET http://localhost:10001/advisor/memory/chat/call?query=你叫什么&conversation_id=yohan
+
+### 如下是知识库
+GET http://localhost:10001/advisor/memory/chat/call?query=技术支持&conversation_id=yohan
+
+###
+GET http://localhost:10001/advisor/memory/chat/call?query=支持哪些运营调价动作核验&conversation_id=yohan
+
+###
+GET http://localhost:10001/advisor/memory/chat/call?query=哪些是规则核验工具可以支持的&conversation_id=yohan
+
+
+
+### 如下是工具调用
+### 这个怪的很,这里点有时候mcp server 那边没日志,postman 次次有日志
+GET http://localhost:10001/advisor/memory/chat/call?query=基础车型定价核验：开始时间: 2025-06-01 00:00:00; 结束时间: 2025-06-01 23:59:59, 飞书链接：https://open.feishu.cn/document/ukTMukTMukTM/uYjMxEjL2MjMx4yMxwjN/chat-v4/chat/create; tempId为基础价,行号为 3&conversation_id=jinzi
+
+### 调用
+GET http://localhost:10001/advisor/memory/chat/call?query=飞书链接帮我获取内容：https://open.feishu
+    .cn/document/ukTMukTMukTM/uYjMxEjL2MjMx4yMxwjN/chat-v4/chat/create&conversation_id=jinzi
+
+### 调用
+GET http://localhost:10001/advisor/memory/chat/call?query=基础路费规则配置查询：beginTime: 2025-06-01 00:00:00,endTime: 2025-06-01 23:59:59&conversation_id=jinzi
+
+### 查看对话记录
+GET http://localhost:10001/advisor/memory/chat/messages?conversation_id=yohan
+
+
+
+### 导入知识库
+GET http://localhost:10001/redis/rag/import
+
+### 导入知识库
+GET http://localhost:10001/redis/rag/search

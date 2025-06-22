@@ -53,6 +53,11 @@ include 'learn-spring-ai:spring-ai-mcp:spring-ai-mcp-server:mcp-server-db-rule'
 findProject(':learn-spring-ai:spring-ai-mcp:spring-ai-mcp-server:mcp-server-db-rule')?.name = 'mcp-server-db-rule'
 include 'learn-spring-ai:spring-ai-rag'
 findProject(':learn-spring-ai:spring-ai-rag')?.name = 'spring-ai-rag'
+include 'learn-spring-ai:spring-ai-case'
+findProject(':learn-spring-ai:spring-ai-case')?.name = 'spring-ai-case'
+include 'learn-spring-ai:spring-ai-case:spring-ai-configuration-verification'
+findProject(':learn-spring-ai:spring-ai-case:spring-ai-configuration-verification')?.name = 'spring-ai-configuration-verification'
+
 
 // 新建项目或模块的 gradle DSL 文件名都叫build.gradle
 // 若想把子模块 gradle 文件改成模块名,需要加以下代码(目前gradle就是改成模块名)

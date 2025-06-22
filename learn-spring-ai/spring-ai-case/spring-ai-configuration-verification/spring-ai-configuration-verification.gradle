@@ -1,0 +1,12 @@
+dependencies {
+    implementation 'com.alibaba.cloud.ai:spring-ai-alibaba-starter-dashscope'
+    implementation 'com.alibaba.cloud.ai:spring-ai-alibaba-starter-memory'
+    implementation 'com.alibaba.cloud.ai:spring-ai-alibaba-starter-memory-jdbc'
+    implementation 'mysql:mysql-connector-java:8.0.32'
+    implementation 'org.springframework.ai:spring-ai-starter-vector-store-redis'
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-client-webflux'
+}
+
+
+// 动态移除对kotlin构建插件的权限,避免子模块构建报错
+tasks.register("prepareKotlinBuildScriptModel") {}

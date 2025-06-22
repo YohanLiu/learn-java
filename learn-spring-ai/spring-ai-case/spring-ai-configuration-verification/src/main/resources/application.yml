@@ -1,0 +1,66 @@
+server:
+  port: 10001
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: spring-ai-configuration-verification
+  ai:
+    dashscope:
+      api-key: ${AI_DASHSCOPE_API_KEY}
+      chat:
+        options:
+          model: qwen3-32b
+
+    chat:
+      memory:
+        repository:
+          jdbc:
+            mysql:
+              jdbc-url: jdbc:mysql://localhost:3306/spring-ai-chat-memory?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true&tinyInt1isBit=false&allowLoadLocalInfile=true&allowLocalInfile=true&allowUrl
+              username: root
+              password: root
+              driver-class-name: com.mysql.cj.jdbc.Driver
+              enabled: true
+
+    mcp:
+      client:
+        toolcallback:
+          enabled: true
+        sse:
+          connections:
+            my-lark-server:
+              # 实际的连接地址为：http://localhost:8080/sse/mcp
+              url: http://localhost:8081
+              sse-endpoint: /lark
+            my-rule-server:
+              url: http://localhost:8080
+              sse-endpoint: /rule
+
+    vectorstore:
+      redis:
+        initialize-schema: true
+        prefix: prefix_spring_ai_alibaba
+        index: index_spring_ai_alibaba
+
+  data:
+    redis:
+      host: localhost
+      port: 6379 # Redis服务器连接端口
+
+  mandatory-file-encoding: UTF-8
+
+# 调试日志
+logging:
+  level:
+    io:
+      modelcontextprotocol:
+        client: DEBUG
+        spec: DEBUG
+    org.springframework.ai: DEBUG
+    reactor: DEBUG
+
