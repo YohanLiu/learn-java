@@ -40,6 +40,11 @@ spring:
             my-rule-server:
               url: http://localhost:8080
               sse-endpoint: /rule
+            # 此处放的魔搭测试返回的mcp:https://modelscope.cn/mcp/servers/yohanLiu/jsondiff
+            # 真正具有对比功能的 mcp:https://modelscope.cn/mcp/servers/yohanLiu/jsonDiffMcp
+            json-diff:
+              url: https://mcp.api-inference.modelscope.net
+              sse-endpoint: /df16a4638a8f43/sse
 
     vectorstore:
       redis:

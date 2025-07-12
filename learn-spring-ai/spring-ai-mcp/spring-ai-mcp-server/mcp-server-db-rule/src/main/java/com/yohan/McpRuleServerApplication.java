@@ -19,8 +19,8 @@ public class McpRuleServerApplication {
 	}
 
 	@Bean
-	public ToolCallbackProvider ruleTools(RuleService ruleService, JsonDiffService jsonDiffService) {
-		return MethodToolCallbackProvider.builder().toolObjects(ruleService, jsonDiffService).build();
+	public ToolCallbackProvider ruleTools(RuleService ruleService) {
+		return MethodToolCallbackProvider.builder().toolObjects(ruleService).build();
 	}
 
 	public record TextInput(String input) {

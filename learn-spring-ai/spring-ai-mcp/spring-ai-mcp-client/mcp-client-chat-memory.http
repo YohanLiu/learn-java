@@ -15,3 +15,7 @@ GET http://localhost:8888/advisor/memory/in/call?query=帮我查询基础定价�
 
 ### 信息
 GET http://localhost:8888/advisor/memory/in/messages?conversation_id=jinzi
+
+
+### 调用model scope部署的 mcp server
+GET http://localhost:8888/advisor/memory/in/call?query=json对比,预期值:"{\"a\":\"ssss\",\"b\":1}", 实际值:"{\"a\":\"ssss\",\"b\":2}"&conversation_id=jinzi

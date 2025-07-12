@@ -24,12 +24,15 @@ spring:
         sse:
           connections:
             my-lark-server:
-              # 实际的连接地址为：http://localhost:8080/sse/mcp
               url: http://localhost:8081
               sse-endpoint: /lark
             my-rule-server:
               url: http://localhost:8080
               sse-endpoint: /rule
+            # 魔搭 mcp:https://modelscope.cn/mcp/servers/yohanLiu/jsonDiffMcp
+            json-diff:
+              url: https://mcp.api-inference.modelscope.net
+              sse-endpoint: /8b0aa907ad8449/sse
   mandatory-file-encoding: UTF-8
 
 # 调试日志

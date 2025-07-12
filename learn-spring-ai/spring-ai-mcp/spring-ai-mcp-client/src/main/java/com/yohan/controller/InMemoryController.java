@@ -3,6 +3,7 @@ package com.yohan.controller;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.messages.Message;
@@ -42,7 +43,7 @@ public class InMemoryController {
                 .defaultSystem(DEFAULT_PROMPT)
                 .defaultAdvisors(
                         MessageChatMemoryAdvisor.builder(messageWindowChatMemory)
-                                .build()
+                                .build(), new SimpleLoggerAdvisor()
                 )
                 .defaultOptions(DashScopeChatOptions.builder()
                         .withTemperature(0.0)
