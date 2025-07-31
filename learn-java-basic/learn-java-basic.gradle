@@ -12,6 +12,9 @@ dependencies {
 
     // 用来分析JVM中Object布局
     implementation 'org.openjdk.jol:jol-core:0.16'
+
+    // https://mvnrepository.com/artifact/cn.idev.excel/fastexcel
+    implementation("cn.idev.excel:fastexcel:1.2.0")
 }
 
 // 动态移除对kotlin构建插件的权限,避免子模块构建报错
