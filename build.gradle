@@ -114,6 +114,8 @@ subprojects {// 子项目配置(可以理解为子模块的全局配置)
 
         implementation 'org.apache.commons:commons-lang3:3.12.0'
         implementation 'org.apache.commons:commons-collections4:4.1'
+        // https://mvnrepository.com/artifact/com.google.guava/guava
+        implementation("com.google.guava:guava:33.4.8-jre")
         // 高版本java需手动引入此包
         // @Resource注解就在此包下
         implementation 'javax.annotation:javax.annotation-api:1.3.2'

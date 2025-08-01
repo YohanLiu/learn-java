@@ -13,7 +13,7 @@ public class ExcelDiffColorizerPoi {
     private static final double THRESHOLD_YELLOW = 0.1; // 1%-10% 黄色
 
     private static final String BASE_DIR = System.getProperty("user.dir") + "/learn-java-basic" +"/src/main" +
-            "/resources/";
+            "/resources/excel/";
 
     public static void main(String[] args) throws IOException {
         // 1. 配置路径（修改为你的实际路径）

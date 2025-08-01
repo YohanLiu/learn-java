@@ -9,10 +9,15 @@ import cn.idev.excel.annotation.write.style.ContentStyle;
 import cn.idev.excel.enums.BooleanEnum;
 import cn.idev.excel.write.handler.CellWriteHandler;
 import cn.idev.excel.write.handler.context.CellWriteHandlerContext;
+import cn.idev.excel.write.merge.OnceAbsoluteMergeStrategy;
 import cn.idev.excel.write.metadata.style.WriteCellStyle;
 import cn.idev.excel.write.metadata.style.WriteFont;
 import cn.idev.excel.write.style.HorizontalCellStyleStrategy;
+import com.google.common.math.DoubleMath;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
@@ -23,9 +28,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -38,19 +43,54 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 public class ExcelDiffColorizerFastExcel {
 
     // 颜色阈值（保持不变）
     private static final double THRESHOLD_GREEN = 0.01;
     private static final double THRESHOLD_YELLOW = 0.1;
 
+    /**
+     * 差异颜色枚举
+     */
+    @AllArgsConstructor
+    @Getter
+    public enum DiffColorEnum {
+        /**
+         * 黑色 - 用于空值或无效值
+         */
+        BLACK(new XSSFColor(new byte[]{(byte) 0, (byte) 0, (byte) 0}, null)),
+        
+        /**
+         * 绿色 - 差异很小
+         */
+        GREEN(new XSSFColor(new byte[]{(byte) 0, (byte) 180, (byte) 0}, null)),
+        
+        /**
+         * 深黄色 - 中等差异
+         */
+        DARK_YELLOW(new XSSFColor(new byte[]{(byte) 209, (byte) 139, (byte) 12}, null)),
+        
+        /**
+         * 红色 - 差异很大
+         */
+        RED(new XSSFColor(new byte[]{(byte) 255, (byte) 50, (byte) 50}, null));
+
+        private XSSFColor color;
+    }
+
     private static final int COLUMN_INDEX_EXPECTED = 2;
     private static final int COLUMN_INDEX_ACTUAL = 4;
     private static final int TOTAL_COLUMN = 5;
 
     private static final String BASE_DIR = System.getProperty("user.dir") + "/learn-java-basic" +"/src/main" +
-            "/resources/";
+            "/resources/excel/";
+
+    public static final Map<Integer, String> itemMap = Map.of(1, "有没有调", 2, "方向--有没有调对", 3, "幅度--有没有调对");
+    public static final Map<Integer, String> remarkMap = Map.of(1, "测算覆盖变化 OD 数量(去重)：6,141\n测算覆盖变化 OD 数量(去重)/实际生效OD数：6,141/0=null%", 2, "产生少量降幅 占比:0.05%\n- 原因：调价前命中起步价兜底，老起步价兜底换标为真实起步价兜底，起步价兜底弹回普通里程\n- 分布：\n调降：7单\n平均降幅:-8.43%\n最大降幅:-18.09%\n最小降幅:-5.51%", 3, "由于统计周期导致单量偏差\n最大降幅：-27.273%\n最大降幅不一致原因：调价前命中起步价兜底，调价后命中真实起步价兜底，老起步价兜底换标为真实起步价兜底\n最小降幅：-0.015%\n最小降幅不一致原因：调价后命中单公里兜底\n\n降幅超过-20%, 数量:1, 占比:0.01%\n\n不一致率：572/14,405 = 3.97%\n-该调的没调（单量）：42\n-该调的没调（占比）：0.294%\n-降幅过大（单量）：9\n-降幅过大（占比）：0.065%\n-降幅过小（单量）：522\n-降幅过小（占比）：3.615%\n\n不一致原因：起步价兜底、单公里兜底\n");
 
     public static void main(String[] args) throws IOException {
         String inputPath = BASE_DIR + "最终预期模版样式.xlsx";
@@ -59,19 +99,19 @@ public class ExcelDiffColorizerFastExcel {
         // 1. 读取Excel数据
         List<List<String>> excelData = readExcelToList(inputPath);
         if (excelData.isEmpty()) {
-            System.err.println("未读取到有效数据！");
+            log.error("未读取到有效数据！");
             return;
         }
 
         // 2. 计算差异
         Map<String, Double> diffMap = calculateDiffMap(excelData);
         if (diffMap.isEmpty()) {
-            System.err.println("未计算到有效差异！");
+            log.error("未计算到有效差异！");
             return;
         }
 
         // 3. 生成EasyExcel数据
-        List<ExcelDiffData> dataList = prepareEasyExcelData(excelData, diffMap);
+        List<VerifyConclusionExcelBO> dataList = prepareEasyExcelData(excelData, diffMap);
 
         // 4. EasyExcel写入到字节数组并且生成Excel文件
         genExcelByByteArray(dataList, outputPath);
@@ -80,23 +120,25 @@ public class ExcelDiffColorizerFastExcel {
         //genExcel(outputPath, dataList);
     }
 
-    private static void genExcel(String outputPath, List<ExcelDiffData> dataList) {
-        EasyExcel.write(outputPath, ExcelDiffData.class)
+    private static void genExcel(String outputPath, List<VerifyConclusionExcelBO> dataList) {
+        EasyExcel.write(outputPath, VerifyConclusionExcelBO.class)
                 .inMemory(true)
                 .registerWriteHandler(new RichTextCellWriteHandler(dataList))
                 .registerWriteHandler(new StyleHandler())
+                .registerWriteHandler(new OnceAbsoluteMergeStrategy(1, 3, 0, 0)) // 合并第一列（索引为0）
                 .sheet("差异着色结果")
                 .doWrite(dataList);
 
         System.out.println("EasyExcel结果生成成功：" + outputPath);
     }
 
-    private static void genExcelByByteArray(List<ExcelDiffData> dataList, String outputPath) throws IOException {
+    private static void genExcelByByteArray(List<VerifyConclusionExcelBO> dataList, String outputPath) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        EasyExcel.write(outputStream, ExcelDiffData.class)
+        EasyExcel.write(outputStream, VerifyConclusionExcelBO.class)
                 .inMemory(true)
                 .registerWriteHandler(new RichTextCellWriteHandler(dataList))
                 .registerWriteHandler(new StyleHandler())
+                .registerWriteHandler(new OnceAbsoluteMergeStrategy(1, 3, 0, 0)) // 合并第一列（索引为0）
                 .sheet("差异着色结果")
                 .doWrite(dataList);
 
@@ -115,27 +157,72 @@ public class ExcelDiffColorizerFastExcel {
     @Data
     @ContentStyle(
             wrapped = BooleanEnum.TRUE)
-    public static class ExcelDiffData {
+    public static class VerifyConclusionExcelBO {
+        @ExcelProperty("核验动作")
+        @ColumnWidth(15)
+        private String action = "核验动作";
+
+        @ExcelProperty("核验项目")
+        @ColumnWidth(20)
+        private String item;
+
+        @ExcelProperty("核验结果")
+        @ColumnWidth(12)
+        private String result = "√";
+
         @ExcelProperty("运营输入标准")
-        @ColumnWidth(80)
+        @ColumnWidth(70)
         private String expected;
 
         @ExcelProperty("技术核验结果")
-        @ColumnWidth(80)
+        @ColumnWidth(50)
         private String actual;
+
+        @ExcelProperty("备注")
+        @ColumnWidth(60)
+        private String remark = "备注";
 
         // 存储着色范围信息
         @ExcelIgnore
-        private List<ColorRange> expectedColorRanges = new ArrayList<>();
+        private List<ColorRangeBO> expectedColorRangeBOS = new ArrayList<>();
 
         @ExcelIgnore
-        private List<ColorRange> actualColorRanges = new ArrayList<>();
+        private List<ColorRangeBO> actualColorRangeBOS = new ArrayList<>();
+
+        @ExcelIgnore
+        private ColorRangeBO resultColorRangesBO;
+
+        @ExcelIgnore
+        private ColorRangeBO remarkColorRangesBO;
+    }
+
+    public static ColorRangeBO checkRemarkColor(String content, Pattern pattern, double overRatio, int group) {
+        Matcher matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            int startIndex = matcher.start();
+            int endIndex = matcher.end();
+
+            // 提取百分比数字并解析
+            String percentStr = matcher.group(group); // 这里是百分比的 group
+            double percent = Double.parseDouble(percentStr);
+            boolean isOverPercent = percent > overRatio;
+
+            if (isOverPercent) {
+                return new ColorRangeBO(startIndex, endIndex, DiffColorEnum.RED.getColor());
+            } else {
+                return new ColorRangeBO(startIndex, endIndex, DiffColorEnum.DARK_YELLOW.getColor());
+            }
+
+
+        } else {
+            return new ColorRangeBO(0, content.length(), DiffColorEnum.BLACK.getColor()); // 未找到匹配
+        }
     }
 
     public static class RichTextCellWriteHandler implements CellWriteHandler {
-        private final List<ExcelDiffData> dataList;
+        private final List<VerifyConclusionExcelBO> dataList;
 
-        public RichTextCellWriteHandler(List<ExcelDiffData> dataList) {
+        public RichTextCellWriteHandler(List<VerifyConclusionExcelBO> dataList) {
             this.dataList = dataList;
         }
 
@@ -146,39 +233,72 @@ public class ExcelDiffColorizerFastExcel {
             }
             int col = context.getColumnIndex();
             int rowIdx = context.getRelativeRowIndex();
-            ExcelDiffData data = dataList.get(rowIdx);
+            VerifyConclusionExcelBO data = dataList.get(rowIdx);
             Workbook workbook = context.getWriteWorkbookHolder().getWorkbook();
             Cell cell = context.getCell();
-            if (col == 0) { // 预期列
+            
+            if (col == 0) {
+                XSSFRichTextString rich = new XSSFRichTextString(data.getAction());
+                Font font = workbook.createFont();
+                font.setFontName("宋体");
+                font.setFontHeightInPoints((short)14);
+                font.setBold(true);
+                rich.applyFont(font);
+                cell.setCellValue(rich);
+            }
+            else if (col == 1) {
+                XSSFRichTextString rich = new XSSFRichTextString(data.getItem());
+                Font font = workbook.createFont();
+                font.setFontName("宋体");
+                font.setFontHeightInPoints((short)12);
+                font.setBold(true);
+                rich.applyFont(font);
+                cell.setCellValue(rich);
+            }
+            else if (col == 2) {
+                XSSFRichTextString rich = new XSSFRichTextString(data.getResult());
+                ColorRangeBO resultColorRangesBO = data.getResultColorRangesBO();
+                Font font = workbook.createFont();
+                font.setFontName("宋体");
+                font.setFontHeightInPoints((short)18);
+                font.setBold(true);
+                // 支持自定义RGB颜色
+                ((XSSFFont) font).setColor(resultColorRangesBO.getCustomColor());
+                rich.applyFont(resultColorRangesBO.getStart(), resultColorRangesBO.getEnd(), font);
+
+                cell.setCellValue(rich);
+            } else if (col == 3) { // 预期列
                 XSSFRichTextString rich = new XSSFRichTextString(data.getExpected());
-                for (ColorRange range : data.getExpectedColorRanges()) {
+                for (ColorRangeBO range : data.getExpectedColorRangeBOS()) {
                     Font font = workbook.createFont();
                     font.setFontName("宋体");
                     font.setFontHeightInPoints((short)10);
                     // 支持自定义RGB颜色
-                    if (range.hasCustomColor() && font instanceof XSSFFont) {
-                        ((XSSFFont) font).setColor(range.getCustomColor());
-                    } else {
-                        font.setColor(range.getColor().getIndex());
-                    }
+                    ((XSSFFont) font).setColor(range.getCustomColor());
                     rich.applyFont(range.getStart(), range.getEnd(), font);
                 }
 
                 cell.setCellValue(rich);
-            } else if (col == 1) { // 实际列
+            } else if (col == 4) { // 实际列
                 XSSFRichTextString rich = new XSSFRichTextString(data.getActual());
-                for (ColorRange range : data.getActualColorRanges()) {
+                for (ColorRangeBO range : data.getActualColorRangeBOS()) {
                     Font font = workbook.createFont();
                     font.setFontName("宋体");
                     font.setFontHeightInPoints((short)10);
                     // 支持自定义RGB颜色
-                    if (range.hasCustomColor() && font instanceof XSSFFont) {
-                        ((XSSFFont) font).setColor(range.getCustomColor());
-                    } else {
-                        font.setColor(range.getColor().getIndex());
-                    }
+                    ((XSSFFont) font).setColor(range.getCustomColor());
                     rich.applyFont(range.getStart(), range.getEnd(), font);
                 }
+                cell.setCellValue(rich);
+            } else if (col == 5) {
+                XSSFRichTextString rich = new XSSFRichTextString(data.getRemark());
+                ColorRangeBO remarkColorRangesBO = data.getRemarkColorRangesBO();
+                Font font = workbook.createFont();
+                font.setFontName("宋体");
+                font.setFontHeightInPoints((short)10);
+                // 支持自定义RGB颜色
+                ((XSSFFont) font).setColor(remarkColorRangesBO.getCustomColor());
+                rich.applyFont(remarkColorRangesBO.getStart(), remarkColorRangesBO.getEnd(), font);
                 cell.setCellValue(rich);
             }
         }
@@ -226,14 +346,34 @@ public class ExcelDiffColorizerFastExcel {
             style.setWriteFont(font);
             return style;
         }
+
+        @Override
+        protected void setContentCellStyle(CellWriteHandlerContext context) {
+            // 调用父类方法设置基本样式
+            super.setContentCellStyle(context);
+
+            // 获取当前列索引
+            int colIndex = context.getColumnIndex();
+
+            // 设置特定列的对齐方式
+            if (colIndex >= 0 && colIndex <= 2) {
+                // 0,1,2列居中对齐
+                context.getFirstCellData().getWriteCellStyle().setVerticalAlignment(VerticalAlignment.CENTER);
+                context.getFirstCellData().getWriteCellStyle().setHorizontalAlignment(HorizontalAlignment.CENTER);
+            } else if (colIndex >= 3 && colIndex <= 5) {
+                // 3,4,5列左上对齐
+                context.getFirstCellData().getWriteCellStyle().setVerticalAlignment(VerticalAlignment.TOP);
+                context.getFirstCellData().getWriteCellStyle().setHorizontalAlignment(HorizontalAlignment.LEFT);
+            }
+        }
     }
 
     // 准备EasyExcel数据（核心逻辑）
-    private static List<ExcelDiffData> prepareEasyExcelData(
+    private static List<VerifyConclusionExcelBO> prepareEasyExcelData(
             List<List<String>> excelData,
             Map<String, Double> diffMap
     ) {
-        List<ExcelDiffData> dataList = new ArrayList<>();
+        List<VerifyConclusionExcelBO> dataList = new ArrayList<>();
 
         for (int i = 1; i <= 3; i++) {
 
@@ -243,16 +383,62 @@ public class ExcelDiffColorizerFastExcel {
                 end = excelData.size();
             }
 
-            ExcelDiffData result = new ExcelDiffData();
+            VerifyConclusionExcelBO result = new VerifyConclusionExcelBO();
             // 构建实际数据（带着色信息）
-            ActualDataResult expectedResult =  buildActualData(excelData, diffMap, COLUMN_INDEX_EXPECTED, i, end);
+            ExcelDataResultBO expectedResult =  buildActualData(excelData, diffMap, COLUMN_INDEX_EXPECTED, i, end);
             result.setExpected(expectedResult.getText());
-            result.setExpectedColorRanges(expectedResult.getColorRanges());
+            result.setExpectedColorRangeBOS(expectedResult.getColorRangeBOS());
 
             // 构建实际数据（带着色信息）
-            ActualDataResult actualResult = buildActualData(excelData, diffMap, COLUMN_INDEX_ACTUAL, i, end);
+            ExcelDataResultBO actualResult = buildActualData(excelData, diffMap, COLUMN_INDEX_ACTUAL, i, end);
             result.setActual(actualResult.getText());
-            result.setActualColorRanges(actualResult.getColorRanges());
+            List<ColorRangeBO> actualColorRangeBOS = actualResult.getColorRangeBOS();
+            result.setActualColorRangeBOS(actualColorRangeBOS);
+
+            result.setItem(itemMap.get(i));
+
+            // 根据colorRanges集合设置resultColorRanges的颜色，优先级为红色、深黄色、绿色
+            XSSFColor resultColor = DiffColorEnum.GREEN.getColor();
+            for (ColorRangeBO actualColorRangeBO : actualColorRangeBOS) {
+                if (actualColorRangeBO.getCustomColor() == DiffColorEnum.RED.getColor()) {
+                    resultColor = DiffColorEnum.RED.getColor();
+                    break;
+                }
+
+                if (actualColorRangeBO.getCustomColor() == DiffColorEnum.DARK_YELLOW.getColor()) {
+                    resultColor = DiffColorEnum.DARK_YELLOW.getColor();
+                }
+            }
+
+            String remark = remarkMap.get(i);
+            result.setRemark(remark);
+            if (i == 1) {
+                result.setRemarkColorRangesBO(new ColorRangeBO(0, remark.length(), DiffColorEnum.BLACK.getColor()));
+            } else if (i == 2) {
+                ColorRangeBO remarkColor = checkRemarkColor(remark, Pattern.compile("占比:(\\d+(\\.\\d+)?)%"), 10.0, 1);
+                result.setRemarkColorRangesBO(new ColorRangeBO(0, remark.length(), remarkColor.getCustomColor()));
+
+            } else if (i == 3) {
+                ColorRangeBO remarkColor = checkRemarkColor(remark, Pattern.compile("不一致率：\\d{1,3}(,?\\d{3})*/\\d{1," +
+                        "3}" +
+                        "(," +
+                        "?\\d{3})* =" +
+                        " " +
+                        "(\\d+\\.\\d+)" +
+                        "%"), 10.0, 3);
+                result.setRemarkColorRangesBO(remarkColor);
+            }
+
+            if (result.getRemarkColorRangesBO().getCustomColor() == DiffColorEnum.RED.getColor()) {
+                resultColor = DiffColorEnum.RED.getColor();
+            }
+
+            if (result.getRemarkColorRangesBO().getCustomColor() == DiffColorEnum.DARK_YELLOW.getColor()) {
+                resultColor = DiffColorEnum.DARK_YELLOW.getColor();
+            }
+
+            result.setResultColorRangesBO(new ColorRangeBO(0, result.getResult().length(), resultColor));
+
             dataList.add(result);
         }
 
@@ -260,7 +446,7 @@ public class ExcelDiffColorizerFastExcel {
     }
 
     // 构建实际数据文本和着色信息
-    private static ActualDataResult buildActualData(
+    private static ExcelDataResultBO buildActualData(
             List<List<String>> excelData,
             Map<String, Double> diffMap,
             int valueColumnIndex, int start, int end
@@ -268,7 +454,7 @@ public class ExcelDiffColorizerFastExcel {
         StringBuilder sb = new StringBuilder();
         String vehicleName = "";
         int currentPos = 0;
-        List<ColorRange> colorRanges = new ArrayList<>();
+        List<ColorRangeBO> colorRangeBOS = new ArrayList<>();
 
         int i = 1;
 
@@ -296,7 +482,7 @@ public class ExcelDiffColorizerFastExcel {
             if (indicator.isEmpty() || value.isEmpty()) continue;
 
             // 3. 格式化数值
-            if (!isInteger(Double.parseDouble(value))) {
+            if (!DoubleMath.isMathematicalInteger(Double.parseDouble(value))) {
                 value = dealNumber(new BigDecimal(value).multiply(BigDecimal.valueOf(100))) + "%";
             } else {
                 value = dealNumber(new BigDecimal(value));
@@ -315,11 +501,11 @@ public class ExcelDiffColorizerFastExcel {
             int numEnd = currentPos + partLength;
 
             String key = vehicleName + "_" + indicator;
-            Double diffPercent = diffMap.getOrDefault(key, 0.0);
+            Double diffPercent = diffMap.getOrDefault(key, null);
             
             // 使用自定义RGB颜色而不是IndexedColors
             XSSFColor customColor = getCustomColorByDiff(diffPercent);
-            colorRanges.add(new ColorRange(numStart, numEnd, customColor));
+            colorRangeBOS.add(new ColorRangeBO(numStart, numEnd, customColor));
 
             // 6. 更新位置
             currentPos += partLength;
@@ -335,7 +521,7 @@ public class ExcelDiffColorizerFastExcel {
             }
         }
 
-        return new ActualDataResult(sb.toString().trim(), colorRanges);
+        return new ExcelDataResultBO(sb.toString().trim(), colorRangeBOS);
     }
 
     private static String dealNumber(BigDecimal number) {
@@ -348,44 +534,29 @@ public class ExcelDiffColorizerFastExcel {
 
     // 着色范围内部类
     @Data
-    private static class ColorRange {
+    private static class ColorRangeBO {
         private final int start;
         private final int end;
-        private final IndexedColors color;
         // 添加自定义RGB颜色字段
         private final XSSFColor customColor;
-
-        // 原来的构造函数保持不变（为了兼容性）
-        public ColorRange(int start, int end, IndexedColors color) {
-            this.start = start;
-            this.end = end;
-            this.color = color;
-            this.customColor = null;
-        }
         
         // 新增支持自定义RGB颜色的构造函数
-        public ColorRange(int start, int end, XSSFColor customColor) {
+        public ColorRangeBO(int start, int end, XSSFColor customColor) {
             this.start = start;
             this.end = end;
-            this.color = null;
             this.customColor = customColor;
-        }
-        
-        // 判断是否使用自定义颜色
-        public boolean hasCustomColor() {
-            return customColor != null;
         }
     }
 
     // 实际数据结果封装
     @Data
-    private static class ActualDataResult {
+    private static class ExcelDataResultBO {
         private final String text;
-        private final List<ColorRange> colorRanges;
+        private final List<ColorRangeBO> colorRangeBOS;
 
-        public ActualDataResult(String text, List<ColorRange> colorRanges) {
+        public ExcelDataResultBO(String text, List<ColorRangeBO> colorRangeBOS) {
             this.text = text;
-            this.colorRanges = colorRanges;
+            this.colorRangeBOS = colorRangeBOS;
         }
     }
 
@@ -487,7 +658,8 @@ public class ExcelDiffColorizerFastExcel {
                 continue; // 至少需要4列（车型、指标、预期、实际）
             }
             String indicator = row.get(1);
-            if (indicator.isEmpty()) {
+            String indicator1 = row.get(3);
+            if (indicator.isEmpty() || indicator1.isEmpty()) {
                 continue;
             }
 
@@ -503,6 +675,7 @@ public class ExcelDiffColorizerFastExcel {
 
             // 生成键（车型_指标）
             diffMap.put(vehicleName + "_" + indicator, diffPercent);
+            diffMap.put(vehicleName + "_" + indicator1, diffPercent);
         }
         return diffMap;
     }
@@ -521,7 +694,7 @@ public class ExcelDiffColorizerFastExcel {
         try {
             return Double.parseDouble(cleanValue);
         } catch (NumberFormatException e) {
-            System.err.println("无效数值：" + value);
+            log.error("无效数值：" + value);
             return null;
         }
     }
@@ -533,7 +706,7 @@ public class ExcelDiffColorizerFastExcel {
      * @return Double 差异百分比，预期为0时特殊处理
      */
     private static Double calculateDiffPercent(Double expected, Double actual) {
-        if(!isInteger(expected)&& !isInteger(actual)){
+        if(!DoubleMath.isMathematicalInteger(expected)&& !DoubleMath.isMathematicalInteger(actual)){
             return Math.abs(expected-actual);
         }
         if (expected == 0) {
@@ -541,9 +714,7 @@ public class ExcelDiffColorizerFastExcel {
         }
         return ((actual - expected) / expected) * 100;
     }
-    public static boolean isInteger(double value) {
-        return value == (long) value;
-    }
+    
     /**
      * 判断当前行是否有下一个指标（避免末尾添加逗号）
      * @param currentRowIndex 当前行索引
@@ -558,24 +729,6 @@ public class ExcelDiffColorizerFastExcel {
         // 下一行的车型列（第0列）为空（属于当前车型）且指标列（第1列）不为空→有下一个指标并且指标数值不为空
         return nextRow.size() >= TOTAL_COLUMN && nextRow.get(0).isEmpty() && !nextRow.get(metricsIndex).isEmpty() && !nextRow.get(valueColumnIndex).isEmpty();
     }
-    /**
-     * 根据差异百分比获取颜色（绝对值判断）
-     * @param diffPercent 差异百分比
-     * @return IndexedColors 颜色枚举
-     */
-    private static IndexedColors getColorByDiff(Double diffPercent) {
-        if (diffPercent == null) {
-            return IndexedColors.BLACK; // 无效差异→黑色
-        }
-        double absDiff = Math.abs(diffPercent);
-        if (absDiff < THRESHOLD_GREEN) {
-            return IndexedColors.GREEN; // <1% 绿色
-        }
-        if (absDiff <= THRESHOLD_YELLOW) {
-            return IndexedColors.LIGHT_ORANGE; // 1%-10% 黄色
-        }
-        return IndexedColors.RED; // >10% 红色
-    }
 
     /**
      * 根据差异百分比获取自定义RGB颜色
@@ -585,19 +738,19 @@ public class ExcelDiffColorizerFastExcel {
     private static XSSFColor getCustomColorByDiff(Double diffPercent) {
         if (diffPercent == null) {
             // 返回黑色 (R=0, G=0, B=0)
-            return new XSSFColor(new byte[]{(byte) 0, (byte) 0, (byte) 0}, null);
+            return DiffColorEnum.BLACK.getColor();
         }
         double absDiff = Math.abs(diffPercent);
         if (absDiff < THRESHOLD_GREEN) {
             // 返回绿色 (R=0, G=180, B=0) 表示差异很小
-            return new XSSFColor(new byte[]{(byte) 0, (byte) 180, (byte) 0}, null);
+            return DiffColorEnum.GREEN.getColor();
         }
         if (absDiff <= THRESHOLD_YELLOW) {
             // 返回深黄色 (R=255, G=165, B=0) 表示中等差异
-            return new XSSFColor(new byte[]{(byte) 209, (byte) 139, (byte) 12}, null);
+            return DiffColorEnum.DARK_YELLOW.getColor();
         }
         // 返回红色 (R=255, G=50, B=50) 表示差异很大
-        return new XSSFColor(new byte[]{(byte) 255, (byte) 50, (byte) 50}, null);
+        return DiffColorEnum.RED.getColor();
     }
 
 }
