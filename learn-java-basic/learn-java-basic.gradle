@@ -15,6 +15,15 @@ dependencies {
 
     // https://mvnrepository.com/artifact/cn.idev.excel/fastexcel
     implementation("cn.idev.excel:fastexcel:1.2.0")
+
+    // https://mvnrepository.com/artifact/cn.hutool/hutool-crypto
+    implementation 'cn.hutool:hutool-crypto:5.8.41'
+
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    implementation 'com.alibaba:fastjson:2.0.57'
+
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.62'
 }
 
 // 动态移除对kotlin构建插件的权限,避免子模块构建报错
