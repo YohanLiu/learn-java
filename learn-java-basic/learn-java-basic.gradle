@@ -1,3 +1,8 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.9.5'
+}
+
 dependencies {
     // redis-jedis
     implementation 'redis.clients:jedis:4.2.3'
@@ -24,6 +29,32 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
     implementation 'org.bouncycastle:bcprov-jdk15on:1.62'
+
+    // Protobuf dependencies
+    implementation 'com.google.protobuf:protobuf-java:4.33.1'
+    implementation 'com.google.protobuf:protobuf-java-util:4.33.1'
+
+    // gRPC and Protobuf dependencies
+    implementation 'io.grpc:grpc-netty-shaded:1.77.0'
+    implementation 'io.grpc:grpc-protobuf:1.77.0'
+    implementation 'io.grpc:grpc-stub:1.77.0'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.33.2'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.77.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
 }
 
 // 动态移除对kotlin构建插件的权限,避免子模块构建报错
