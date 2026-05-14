@@ -1,14 +1,23 @@
 package com.yohan.javabasic.java.juc;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
-import org.junit.jupiter.api.Test;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicMarkableReference;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicStampedReference;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.LongBinaryOperator;
+
+import org.junit.jupiter.api.Test;
+
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * @author yohan
@@ -79,10 +88,14 @@ public class AtomicTest {
     // 引用类型原子类------------------------------------------------------------------------------------------------------
     @Getter
     @ToString
-    @AllArgsConstructor
     class User {
         String userName;
         Integer age;
+
+        public User(String userName, Integer age) {
+            this.userName = userName;
+            this.age = age;
+        }
     }
 
     /**
