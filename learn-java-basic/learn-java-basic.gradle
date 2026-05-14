@@ -24,6 +24,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
     implementation 'org.bouncycastle:bcprov-jdk15on:1.62'
+
+    // Source: https://mvnrepository.com/artifact/com.yomahub/liteflow-spring-boot-starter
+    implementation("com.yomahub:liteflow-spring-boot-starter:2.15.3")
 }
 
 // 动态移除对kotlin构建插件的权限,避免子模块构建报错

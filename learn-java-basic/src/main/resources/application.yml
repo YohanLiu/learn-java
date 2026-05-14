@@ -23,3 +23,6 @@ xxl:
       appname: xxl-job-executor-sample
       logretentiondays: 30
 
+liteflow:
+  rule-source: config/flow.xml
+
